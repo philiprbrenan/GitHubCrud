@@ -20,6 +20,12 @@ my $b = Module::Build->new
    },
   configure_requires => {'Module::Build' => 0.4224},
   create_readme =>  0,
+  meta_merge =>
+   {resources =>
+     {repository => 'https://github.com/philiprbrenan/GitHubCrud',
+      bugtracker => 'https://github.com/philiprbrenan/GitHubCrud/issues'
+     }
+   },
  );
 
 $b->create_build_script();

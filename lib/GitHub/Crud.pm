@@ -8,7 +8,7 @@
 # add download repo zip file as is done in Dita::Conversion then reply to Ivan and request inclusion of this module on their list
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20201031;
+our $VERSION = 20201115;
 use warnings FATAL => qw(all);
 use strict;
 use Carp qw(confess);
@@ -803,7 +803,8 @@ sub createIssue($)                                                              
   my $success = $r->status == 201;                                              # Check response code
   unlink $tmpFile;                                                              # Cleanup
   $gitHub->failed = $success ? undef : 1;
-  !$success and $gitHub->confessOnFailure and confess dump($gitHub);            # Confess to any failure if so requested
+  !$success and $gitHub->confessOnFailure and                                   # Confess to any failure if so requested
+    confess join "\n", dump($gitHub), $json, $s;
   $success ? 1 : undef                                                          # Return true on success
  }
 
@@ -818,6 +819,31 @@ sub createIssueFromSavedToken($$$$;$)                                           
   $g->loadPersonalAccessToken;
   $g->confessOnFailure          = 1;
   $g->createIssue;
+ }
+
+sub createIssueInCurrentRepo($$)                                                # Create an issue in the current GitHub repo if we are running on GitHub
+ {my ($title, $body) = @_;                                                      # Title of issue, body of issue
+  if (my $r = $ENV{GITHUB_REPOSITORY})                                          # We are on GitHub
+   {my ($user, $repo) = split m(/), $r, 2;
+    my $g = GitHub::Crud::new;
+    $g->userid                    = $user;
+    $g->repository                = $repo;
+    $g->title                     = $title;
+    $g->body                      = $body;
+    $g->personalAccessToken       = $ENV{GITHUB_TOKEN};
+    $g->confessOnFailure          = 1;
+    $g->createIssue;
+   }
+  elsif (-e q(/home/phil))
+   {my $g = GitHub::Crud::new;
+    $g->userid                    = "philiprbrenan";
+    $g->repository                = "AppaAppsGitHubPhotoApp";
+    $g->title                     = $title;
+    $g->body                      = $body;
+    $g->loadPersonalAccessToken;
+    $g->confessOnFailure          = 1;
+    $g->createIssue;
+   }
  }
 
 sub writeFileUsingSavedToken($$$$;$)                                            # Write to a file on L<GitHub> using a personal access token as supplied or saved in a file. Return B<1> on success or confess to any failure.
@@ -862,6 +888,30 @@ sub writeFolderUsingSavedToken($$$$;$)                                          
    }
  }
 
+sub writeCommitUsingSavedToken($$$;$)                                           # Write all the files in a local folder to a named L<GitHub> repository using a personal access token as supplied or saved in a file.
+ {my ($userid, $repository, $source, $accessFolderOrToken) = @_;                # Userid on GitHub, repository name, local folder on github, optionally: location of access token.
+  my $g = GitHub::Crud::new;
+  $g->userid                    = $userid;
+  $g->repository                = $repository;
+  $g->personalAccessTokenFolder = $accessFolderOrToken;
+  $g->loadPersonalAccessToken;
+  $g->branch                    = 'master';
+
+  $g->writeCommit($source);
+ }
+
+sub deleteFileUsingSavedToken($$$;$)                                            # Delete a file on GitHub using a saved token
+ {my ($userid, $repository, $target, $accessFolderOrToken) = @_;                # Userid on GitHub, repository name, file on Github, optional: the folder containing saved access tokens
+  my $g = GitHub::Crud::new;
+  $g->userid                    = $userid;
+  $g->repository                = $repository;
+  $g->personalAccessTokenFolder = $accessFolderOrToken;
+  $g->loadPersonalAccessToken;
+
+  $g->gitFile = $target;
+  $g->delete;
+ }
+
 #D1 Access tokens                                                               # Load and save access tokens. Some L<github> requets must be signed with an L<OAuth>  access token. These methods allow you to store and reuse such tokens.
 
 sub savePersonalAccessToken($)                                                  # Save a L<GitHub> personal access token by userid in folder L<personalAccessTokenFolder|/personalAccessTokenFolder>.
@@ -886,6 +936,10 @@ sub loadPersonalAccessToken($)                                                  
    {return $gitHub->personalAccessToken = $gitHub->personalAccessTokenFolder;
    }
 
+  if ($ENV{GITHUB_TOKEN})                                                       # Access token supplied through environment
+   {return $gitHub->personalAccessToken = $ENV{GITHUB_TOKEN};
+   }
+
   my $dir  = $gitHub->personalAccessTokenFolder // accessFolder;
   my $file = filePathExt($dir, $user, q(data));
   my $p = retrieveFile $file;                                                   # Load personal access token
@@ -906,7 +960,17 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 # containingFolder
 
 @ISA          = qw(Exporter);
-@EXPORT_OK    = qw(createRepositoryFromSavedToken writeFileUsingSavedToken writeFileFromFileUsingSavedToken);
+@EXPORT_OK    = qw(
+createIssueFromSavedToken
+createIssueInCurrentRepo
+createRepositoryFromSavedToken
+deleteFileUsingSavedToken
+readFileUsingSavedToken
+writeCommitUsingSavedToken
+writeFileUsingSavedToken
+writeFileFromFileUsingSavedToken
+writeFolderUsingSavedToken
+);
 %EXPORT_TAGS  = (all=>[@EXPORT_OK]);
 
 #podDocumentation

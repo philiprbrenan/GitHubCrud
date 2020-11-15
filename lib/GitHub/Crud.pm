@@ -7,7 +7,7 @@
 #podDocumentation
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20201116;
+our $VERSION = 20201117;
 use warnings FATAL => qw(all);
 use strict;
 use Carp              qw(confess);
@@ -330,6 +330,8 @@ sub specialFileData($)                                                          
     return 1 if $h =~ m(\Ad0cf11e0)i;                                           # OLE files
     return 1 if $h =~ m(\Affd8ff)i;                                             # Jpg
     return 1 if $h =~ m(\A89504e470d0a1a0a)i;                                   # Png
+    return 1 if $h =~ m(\A4D546864)i;                                           # Midi
+    return 1 if $h =~ m(\A49443340)i;                                           # Mp3
    }
   0                                                                             # Not a special file
  }
@@ -390,7 +392,10 @@ sub write($$;$)                                                                 
    }
 
   my $url  = url;
+  my $save = $gitHub->gitFile;                                                  # Save any existing file name as we might need to update it to get the sha if the target file was supplied as a parameter to this sub
+  $gitHub->gitFile = $File if $File;                                            # Set target file name so we can get its sha
   my $s    = $gitHub->getExistingSha || getSha($data);                          # Get the L<sha> of the file if the file exists
+  $gitHub->gitFile = $save;                                                     # Restore file name
   my $sha = $s ? ', "sha": "'. $s .'"' : '';                                    # L<sha> of existing file or blank string if no existing file
 
 # if ($s and my $S = getSha($data))                                             # L<sha> of new data
@@ -820,17 +825,24 @@ sub createIssueFromSavedToken($$$$;$)                                           
   $g->createIssue;
  }
 
-sub createIssueInCurrentRepo($$)                                                # Create an issue in the current GitHub repo if we are running on GitHub
- {my ($title, $body) = @_;                                                      # Title of issue, body of issue
-  if (my $r = $ENV{GITHUB_REPOSITORY})                                          # We are on GitHub
+sub currentRepo()                                                               # Create a github object for the  current repo if we are on github actions
+ {if (my $r = $ENV{GITHUB_REPOSITORY})                                          # We are on GitHub
    {my ($user, $repo) = split m(/), $r, 2;
     my $g = GitHub::Crud::new;
     $g->userid                    = $user;
     $g->repository                = $repo;
-    $g->title                     = $title;
-    $g->body                      = $body;
     $g->personalAccessToken       = $ENV{GITHUB_TOKEN};
     $g->confessOnFailure          = 1;
+    return $g;
+   }
+  undef
+ }
+
+sub createIssueInCurrentRepo($$)                                                # Create an issue in the current GitHub repo if we are running on GitHub
+ {my ($title, $body) = @_;                                                      # Title of issue, body of issue
+  if (my $g = currentRepo)                                                      # We are on GitHub
+   {$g->title                     = $title;
+    $g->body                      = $body;
     $g->createIssue;
    }
  }
@@ -854,14 +866,9 @@ sub writeFileFromFileUsingSavedToken($$$$;$)                                    
 
 sub writeBinaryFileFromFileInCurrentRun($$)                                     # Upload a binary file from the current run into the repo.
  {my ($target, $source) = @_;                                                   # The target file name in the repo, the current file name in the run
-  if (my $r = $ENV{GITHUB_REPOSITORY})                                          # We are on GitHub
-   {my ($user, $repo) = split m(/), $r, 2;
-    my $g = GitHub::Crud::new;
-    $g->userid                    = $user;
-    $g->repository                = $repo;
-    $g->personalAccessToken       = $ENV{GITHUB_TOKEN};
-    $g->confessOnFailure          = 1;
-    $g->write(readBinaryFile($source), $target);
+  if (my $g = currentRepo)                                                      # We are on GitHub
+   {$g->gitFile = $target;
+    $g->write(readBinaryFile($source));
    }
  }
 

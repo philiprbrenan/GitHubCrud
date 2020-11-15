@@ -5,18 +5,17 @@
 # Philip R Brenan at gmail dot com, Appa Apps Ltd, 2017-2020
 #-------------------------------------------------------------------------------
 #podDocumentation
-# add download repo zip file as is done in Dita::Conversion then reply to Ivan and request inclusion of this module on their list
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20201115;
+our $VERSION = 20201116;
 use warnings FATAL => qw(all);
 use strict;
-use Carp qw(confess);
-use Data::Dump qw(dump);
+use Carp              qw(confess);
+use Data::Dump        qw(dump);
 use Data::Table::Text qw(:all !fileList);
-use Digest::SHA1 qw(sha1_hex);
-use Time::HiRes qw(time);
-use Encode qw(encode decode);
+use Digest::SHA1      qw(sha1_hex);
+use Time::HiRes       qw(time);
+use Encode            qw(encode decode);
 use utf8;                                                                       # To allow utf8 constants for testing
 
 sub url          { "https://api.github.com/repos" }                             # Github repository api url
@@ -834,16 +833,6 @@ sub createIssueInCurrentRepo($$)                                                
     $g->confessOnFailure          = 1;
     $g->createIssue;
    }
-  elsif (-e q(/home/phil))
-   {my $g = GitHub::Crud::new;
-    $g->userid                    = "philiprbrenan";
-    $g->repository                = "AppaAppsGitHubPhotoApp";
-    $g->title                     = $title;
-    $g->body                      = $body;
-    $g->loadPersonalAccessToken;
-    $g->confessOnFailure          = 1;
-    $g->createIssue;
-   }
  }
 
 sub writeFileUsingSavedToken($$$$;$)                                            # Write to a file on L<GitHub> using a personal access token as supplied or saved in a file. Return B<1> on success or confess to any failure.
@@ -861,6 +850,19 @@ sub writeFileFromFileUsingSavedToken($$$$;$)                                    
  {my ($userid, $repository, $file, $localFile, $accessFolderOrToken) = @_;      # Userid on GitHub, repository name, file name on github, file content, location of access token.
   writeFileUsingSavedToken($userid, $repository, $file,
                            readBinaryFile($localFile), $accessFolderOrToken);
+ }
+
+sub writeBinaryFileFromFileInCurrentRun($$)                                     # Upload a binary file from the current run into the repo.
+ {my ($target, $source) = @_;                                                   # The target file name in the repo, the current file name in the run
+  if (my $r = $ENV{GITHUB_REPOSITORY})                                          # We are on GitHub
+   {my ($user, $repo) = split m(/), $r, 2;
+    my $g = GitHub::Crud::new;
+    $g->userid                    = $user;
+    $g->repository                = $repo;
+    $g->personalAccessToken       = $ENV{GITHUB_TOKEN};
+    $g->confessOnFailure          = 1;
+    $g->write(readBinaryFile($source), $target);
+   }
  }
 
 sub readFileUsingSavedToken($$$;$)                                              # Read from a file on L<GitHub> using a personal access token as supplied or saved in a file.  Return the content of the file on success or confess to any failure.
@@ -966,9 +968,10 @@ createIssueInCurrentRepo
 createRepositoryFromSavedToken
 deleteFileUsingSavedToken
 readFileUsingSavedToken
+writeBinaryFileFromFileInCurrentRun
 writeCommitUsingSavedToken
-writeFileUsingSavedToken
 writeFileFromFileUsingSavedToken
+writeFileUsingSavedToken
 writeFolderUsingSavedToken
 );
 %EXPORT_TAGS  = (all=>[@EXPORT_OK]);

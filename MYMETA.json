@@ -4,13 +4,13 @@
       "philiprbrenan@gmail.com"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.4229",
+   "generated_by" : "Module::Build version 0.4231",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "GitHub-Crud",
    "prereqs" : {
@@ -21,16 +21,15 @@
       },
       "runtime" : {
          "requires" : {
-            "Carp" : "0",
-            "Data::Dump" : "0",
-            "Data::Table::Text" : "20201029",
-            "Date::Manip" : "0",
-            "Digest::SHA1" : "0",
-            "Scalar::Util" : "0",
-            "Storable" : "0",
-            "Test2::API" : "0",
-            "Test::More" : "0",
-            "Time::HiRes" : "0",
+            "Carp" : 0,
+            "Data::Dump" : 0,
+            "Data::Table::Text" : 20201029,
+            "Digest::SHA1" : 0,
+            "Scalar::Util" : 0,
+            "Storable" : 0,
+            "Test2::API" : 0,
+            "Test::More" : 0,
+            "Time::HiRes" : 0,
             "perl" : "v5.26.1"
          }
       }
@@ -54,5 +53,5 @@
       }
    },
    "version" : "202102121",
-   "x_serialization_backend" : "JSON::PP version 2.27400_02"
+   "x_serialization_backend" : "JSON::PP version 4.02"
 }

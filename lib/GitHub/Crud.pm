@@ -7,14 +7,14 @@
 #podDocumentation
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 202102121;
+our $VERSION = 20210505;
 use warnings FATAL => qw(all);
 use strict;
 use Carp              qw(confess);
 use Data::Dump        qw(dump);
 use Data::Table::Text qw(:all !fileList);
 use Digest::SHA1      qw(sha1_hex);
-use Date::Manip;
+#use Date::Manip;
 use Scalar::Util      qw(blessed reftype looks_like_number);
 use Time::HiRes       qw(time);
 use Encode            qw(encode decode);
@@ -153,6 +153,7 @@ genHash(q(GitHub::Crud::Response),                                              
   X_Timer                                 => undef,
   x_xss_protection                        => undef,
   X_XSS_Protection                        => undef,
+  x_ratelimit_resource=> undef,
  );
 
 genHash(q(GitHub::Crud::Response::Data),                                        # Response from a request made to L<GitHub>.

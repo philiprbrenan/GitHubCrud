@@ -7,7 +7,7 @@
 #podDocumentation
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20210505; # Upload and reindex on 21/5/8
+our $VERSION = 20210519; # Upload and reindex on 21/5/8
 use warnings FATAL => qw(all);
 use strict;
 use Carp              qw(confess);

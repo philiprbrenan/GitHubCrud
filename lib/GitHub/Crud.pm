@@ -5,10 +5,9 @@
 # Philip R Brenan at gmail dot com, Appa Apps Ltd, 2017-2020
 #-------------------------------------------------------------------------------
 #podDocumentation
-# Create actions subsection and discuss how to use GHC in an action to load files back to the repo.
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20210528;
+our $VERSION = 20230303;
 use warnings FATAL => qw(all);
 use strict;
 use Carp              qw(confess);
@@ -65,7 +64,7 @@ sub GitHub::Crud::Response::new($$)                                             
      }
 
     if (keys %can)                                                              # List of new methods required
-     {lll "Add the following fields to package GitHub::Crud::Response";
+     {lll "Add the following fields to package GitHub::Crud::Response, continuing ...";
       say STDERR "  $_=> undef," for(sort keys %can);
      }
 
@@ -154,7 +153,8 @@ genHash(q(GitHub::Crud::Response),                                              
   X_Timer                                 => undef,
   x_xss_protection                        => undef,
   X_XSS_Protection                        => undef,
-  x_ratelimit_resource=> undef,
+  x_ratelimit_resource                    => undef,
+  x_github_api_version_selected           => undef,
  );
 
 genHash(q(GitHub::Crud::Response::Data),                                        # Response from a request made to L<GitHub>.
@@ -983,7 +983,7 @@ sub createIssueInCurrentRepo($$)                                                
    }
  }
 
-sub writeFileFromCurrentRun($$)                                                 # Write test into a file in the current L<GitHub> repository if we are running on L<GitHub>.
+sub writeFileFromCurrentRun($$)                                                 # Write text into a file in the current L<GitHub> repository if we are running on L<GitHub>.
  {my ($target, $text) = @_;                                                     # The target file name in the repo, the text to write into this file
   if (my $g = currentRepo)                                                      # We are on GitHub
    {$g->gitFile = $target;
@@ -1091,7 +1091,14 @@ described at:
 
   https://developer.github.com/v3/repos/contents/#update-a-file
 
-=head2 Example
+=head2 Upload a file from an action
+
+Upload a file created during a github action to the repository for that action:
+
+  GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+  perl -M"GitHub::Crud" -e"GitHub::Crud::writeFileFromFileFromCurrentRun q(output.txt);"
+
+=head2 Upload a folder
 
 Commit a folder to GitHub then read and check some of the uploaded content:
 
@@ -1146,7 +1153,7 @@ to supply it to each call via the L</personalAccessToken> attribute.
 Create, Read, Update, Delete files, commits, issues, and web hooks on GitHub.
 
 
-Version 20210528.
+Version 20210615.
 
 
 The following sections describe the methods in each functional area of this
@@ -2095,6 +2102,11 @@ B<Example:>
 
     confess "Load/Save token FAILED" unless $t eq $T;
     success "Load/Save token succeeded"
+
+
+
+=head1 Hash Definitions
+
 
 
 

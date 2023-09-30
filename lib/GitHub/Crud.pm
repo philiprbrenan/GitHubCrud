@@ -7,7 +7,7 @@
 #podDocumentation
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20230303;
+our $VERSION = 20230930;
 use warnings FATAL => qw(all);
 use strict;
 use Carp              qw(confess);
@@ -1148,12 +1148,25 @@ or at a location of your choice.  If you use a well known location then the
 personal access token will be loaded automatically for you, else you will need
 to supply it to each call via the L</personalAccessToken> attribute.
 
+The following code will install a personal access token for github userid 
+B<uuuuuu>  in the default location:
+
+  use GitHub::Crud qw(:all);
+ 
+  my $g = GitHub::Crud::gitHub
+   (userid                    => q(uuuuuu),
+    personalAccessToken       => q(........................................),
+  # personalAccessTokenFolder => $d,
+   );
+
+  $g->savePersonalAccessToken;
+
 =head1 Description
 
 Create, Read, Update, Delete files, commits, issues, and web hooks on GitHub.
 
 
-Version 20210615.
+Version 20230930.
 
 
 The following sections describe the methods in each functional area of this
@@ -1178,29 +1191,29 @@ B<Example:>
     my $f  = temporaryFolder;                                                     # Folder in which we will create some files to upload in the commit
     my $c  = dateTimeStamp;                                                       # Create some content
     my $if = q(/home/phil/.face);                                                 # Image file
-
+  
     writeFile(fpe($f, q(data), $_, qw(txt)), $c) for 1..3;                        # Place content in files in a sub folder
     copyBinaryFile $if, my $If = fpe $f, qw(face jpg);                            # Add an image
-
-
+  
+  
     my $g = GitHub::Crud::new                                                     # Create GitHub  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       (userid           => q(philiprbrenan),
        repository       => q(aaa),
        branch           => q(test),
        confessOnFailure => 1);
-
+  
     $g->loadPersonalAccessToken;                                                  # Load a personal access token
     $g->writeCommit($f);                                                          # Upload commit - confess to any errors
-
+  
     my $C = $g->read(q(data/1.txt));                                              # Read data written in commit
     my $I = $g->read(q(face.jpg));
     my $i = readBinaryFile $if;
-
+  
     confess "Date stamp failed" unless $C eq $c;                                  # Check text
     confess "Image failed"      unless $i eq $I;                                  # Check image
     success "Write commit succeeded";
-
+  
 
 =head1 Files
 
@@ -1230,13 +1243,13 @@ Returns the list of file names found or empty list if no files were found.
 B<Example:>
 
 
-
+  
     success "list:", gitHub->list;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
   # list: alpha.data .github/workflows/test.yaml images/aaa.txt images/aaa/bbb.txt  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
 
 =head2 read($gitHub, $File)
 
@@ -1263,11 +1276,11 @@ B<Example:>
     $g->gitFile = my $f = q(z'2  'z"z.data);
     my $d = q(𝝰𝝱𝝲);
     $g->write($d);
-
+  
     confess "read FAILED" unless $g->read eq $d;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Read passed";
-
+  
 
 =head2 write($gitHub, $data, $File)
 
@@ -1285,35 +1298,35 @@ B<Example:>
 
     my $g = gitHub;
     $g->gitFile = "zzz.data";
-
+  
     my $d = dateTimeStamp.q( 𝝰𝝱𝝲);
-
+  
     if (1)
      {my $t = time();
-
+  
       $g->write($d);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
       lll "First write time: ", time() -  $t;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
-
+  
     my $r = $g->read;
     lll "Write bbb: $r";
     if (1)
      {my $t = time();
-
+  
       $g->write($d);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
       lll "Second write time: ", time() -  $t;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
-
+  
     confess "write FAILED" unless $g->exists;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Write passed";
-
+  
 
 =head2 readBlob($gitHub, $sha)
 
@@ -1334,13 +1347,13 @@ B<Example:>
     my $s = $g->writeBlob($d);
     my $S = q(4a2df549febb701ba651aae46e041923e9550cb8);
     confess q(Write blob FAILED) unless $s eq $S;
-
-
+  
+  
     my $D = $g->readBlob($s);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     confess q(Write/Read blob FAILED) unless $d eq $D;
     success q(Write/Read blob passed);
-
+  
 
 =head2 writeBlob($gitHub, $data)
 
@@ -1358,16 +1371,16 @@ B<Example:>
     my $g = gitHub;
     $g->gitFile = "face.jpg";
     my $d = readBinaryFile(q(/home/phil/.face));
-
+  
     my $s = $g->writeBlob($d);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     my $S = q(4a2df549febb701ba651aae46e041923e9550cb8);
     confess q(Write blob FAILED) unless $s eq $S;
-
+  
     my $D = $g->readBlob($s);
     confess q(Write/Read blob FAILED) unless $d eq $D;
     success q(Write/Read blob passed);
-
+  
 
 =head2 copy($gitHub, $target)
 
@@ -1394,18 +1407,18 @@ B<Example:>
     $g->gitFile   = $f1;
     my $d = dateTimeStamp;
     my $w = $g->write($d);
-
+  
     my $r = $g->copy($f2);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     lll "Copy created: $r";
     $g->gitFile   = $f2;
     my $D = $g->read;
     lll "Read     ccc: $D";
-
+  
     confess "copy FAILED" unless $d eq $D;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Copy passed"
-
+  
 
 =head2 exists($gitHub)
 
@@ -1425,15 +1438,15 @@ B<Example:>
     $g->gitFile    = "test4.html";
     my $d = dateTimeStamp;
     $g->write($d);
-
+  
     confess "exists FAILED" unless $g->read eq $d;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     $g->delete;
-
+  
     confess "exists FAILED" if $g->read eq $d;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Exists passed";
-
+  
 
 =head2 rename($gitHub, $target)
 
@@ -1455,27 +1468,27 @@ B<Example:>
     my ($f1, $f2) = qw(zzz.data zzz2.data);
     my $g = gitHub;
        $g->gitFile = $f2; $g->delete;
-
+  
     my $d = dateTimeStamp;
     $g->gitFile  = $f1;
     $g->write($d);
-
+  
     confess "rename FAILED" unless $g->read eq $d;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
-
+  
+  
     $g->rename($f2);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
     confess "rename FAILED" if $g->exists;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
     $g->gitFile  = $f2;
-
+  
     confess "rename FAILED" if $g->read eq $d;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Rename passed";
-
+  
 
 =head2 delete($gitHub)
 
@@ -1499,40 +1512,40 @@ B<Example:>
     my $d = dateTimeStamp;
     $g->gitFile = "zzz.data";
     $g->write($d);
-
-
+  
+  
     confess "delete FAILED" unless $g->read eq $d;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
     if (1)
      {my $t = time();
-
+  
       my $d = $g->delete;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       lll "Delete   1: ", $d;
-
+  
       lll "First delete: ", time() -  $t;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
       confess "delete FAILED" if $g->exists;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
-
+  
     if (1)
      {my $t = time();
-
+  
       my $d = $g->delete;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       lll "Delete   1: ", $d;
-
+  
       lll "Second delete: ", time() -  $t;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
       confess "delete FAILED" if $g->exists;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     success "Delete passed";
-
+  
 
 =head1 Repositories
 
@@ -1548,11 +1561,11 @@ Get the overall details of a repository
 B<Example:>
 
 
-
+  
     my $r = gitHub(repository => q(C))->getRepository;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Get repository succeeded";
-
+  
 
 =head2 listCommits($gitHub)
 
@@ -1566,7 +1579,7 @@ Required attributes: L<userid|/userid>, L<repository|/repository>.
 B<Example:>
 
 
-
+  
     my $c = gitHub->listCommits;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     my %s = listCommitShas $c;
@@ -1575,7 +1588,7 @@ B<Example:>
     lll "Commit shas
 ", dump \%s;
     success "ListCommits passed";
-
+  
 
 =head2 listCommitShas($commits)
 
@@ -1588,7 +1601,7 @@ B<Example:>
 
 
     my $c = gitHub->listCommits;
-
+  
     my %s = listCommitShas $c;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     lll "Commits
@@ -1596,7 +1609,7 @@ B<Example:>
     lll "Commit shas
 ", dump \%s;
     success "ListCommits passed";
-
+  
 
 =head2 writeCommit($gitHub, $folder, @files)
 
@@ -1615,35 +1628,35 @@ B<Example:>
     my $f  = temporaryFolder;                                                     # Folder in which we will create some files to upload in the commit
     my $c  = dateTimeStamp;                                                       # Create some content
     my $if = q(/home/phil/.face);                                                 # Image file
-
+  
     writeFile(fpe($f, q(data), $_, qw(txt)), $c) for 1..3;                        # Place content in files in a sub folder
     copyBinaryFile $if, my $If = fpe $f, qw(face jpg);                            # Add an image
-
+  
     my $g = GitHub::Crud::new                                                     # Create GitHub
       (userid           => q(philiprbrenan),
        repository       => q(aaa),
        branch           => q(test),
        confessOnFailure => 1);
-
+  
     $g->loadPersonalAccessToken;                                                  # Load a personal access token
-
+  
     $g->writeCommit($f);                                                          # Upload commit - confess to any errors  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
     my $C = $g->read(q(data/1.txt));                                              # Read data written in commit
     my $I = $g->read(q(face.jpg));
     my $i = readBinaryFile $if;
-
+  
     confess "Date stamp failed" unless $C eq $c;                                  # Check text
     confess "Image failed"      unless $i eq $I;                                  # Check image
     success "Write commit succeeded";
-
+  
 
 =head2 listWebHooks($gitHub)
 
 List web hooks associated with your L<GitHub|https://github.com/philiprbrenan> repository.
 
-Required: L<userid|/userid>, L<repository|/repository>, L<patKey|/patKey>.
+Required: L<userid|/userid>, L<repository|/repository>, L<patKey|/patKey>. 
 
 If the list operation is successful, L<failed|/failed> is set to false otherwise it is set to true.
 
@@ -1655,10 +1668,10 @@ Returns true if the list  operation was successful else false.
 B<Example:>
 
 
-
+  
     success join ' ', q(Webhooks:), dump(gitHub->listWebHooks);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
 
 =head2 createPushWebHook($gitHub)
 
@@ -1679,11 +1692,11 @@ B<Example:>
 
 
     my $g = gitHub;
-
+  
     my $d = $g->createPushWebHook;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success join ' ', "Create web hook:", dump($d);
-
+  
 
 =head2 listRepositories($gitHub)
 
@@ -1699,10 +1712,10 @@ Returns details of the repositories.
 B<Example:>
 
 
-
+  
     success "List repositories: ", dump(gitHub()->listRepositories);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
 
 =head2 createRepository($gitHub)
 
@@ -1718,11 +1731,11 @@ Returns true if the issue was created successfully else false.
 B<Example:>
 
 
-
+  
     gitHub(repository => q(ccc))->createRepository;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Create repository succeeded";
-
+  
 
 =head2 createRepositoryFromSavedToken($userid, $repository, $private, $accessFolderOrToken)
 
@@ -1739,11 +1752,11 @@ Returns true if the issue was created successfully else false.
 B<Example:>
 
 
-
+  
     createRepositoryFromSavedToken(q(philiprbrenan), q(ddd));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Create repository succeeded";
-
+  
 
 =head1 Issues
 
@@ -1765,11 +1778,11 @@ Returns true if the issue was created successfully else false.
 B<Example:>
 
 
-
+  
     gitHub(title=>q(Hello), body=>q(World))->createIssue;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Create issue succeeded";
-
+  
 
 =head1 Using saved access tokens
 
@@ -1791,11 +1804,11 @@ Returns true if the issue was created successfully else false.
 B<Example:>
 
 
-
+  
     &createIssueFromSavedToken(qw(philiprbrenan ddd hello World));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Create issue succeeded";
-
+  
 
 =head2 writeFileUsingSavedToken($userid, $repository, $file, $content, $accessFolderOrToken)
 
@@ -1812,14 +1825,14 @@ B<Example:>
 
 
     my $s = q(HelloWorld);
-
+  
     &writeFileUsingSavedToken(qw(philiprbrenan ddd hello.txt), $s);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     my $S = gitHub(repository=>q(ddd), gitFile=>q(hello.txt))->read;
-
+  
     confess "Write file using saved token FAILED" unless $s eq $S;
     success "Write file using saved token succeeded";
-
+  
 
 =head2 writeFileFromFileUsingSavedToken($userid, $repository, $file, $localFile, $accessFolderOrToken)
 
@@ -1837,13 +1850,13 @@ B<Example:>
 
     my $f = writeFile(undef, my $s = "World
 ");
-
+  
     &writeFileFromFileUsingSavedToken(qw(philiprbrenan ddd hello.txt), $f);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     my $S = gitHub(repository=>q(ddd), gitFile=>q(hello.txt))->read;
     confess "Write file from file using saved token FAILED" unless $s eq $S;
     success "Write file from file using saved token succeeded"
-
+  
 
 =head2 readFileUsingSavedToken($userid, $repository, $file, $accessFolderOrToken)
 
@@ -1860,13 +1873,13 @@ B<Example:>
 
     my $s = q(Hello to the World);
             &writeFileUsingSavedToken(qw(philiprbrenan ddd hello.txt), $s);
-
+  
     my $S = &readFileUsingSavedToken (qw(philiprbrenan ddd hello.txt));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
     confess "Read file using saved token FAILED" unless $s eq $S;
     success "Read file using saved token succeeded"
-
+  
 
 =head2 writeFolderUsingSavedToken($userid, $repository, $targetFolder, $localFolder, $accessFolderOrToken)
 
@@ -1883,10 +1896,10 @@ B<Example:>
 
 
     writeCommitUsingSavedToken("philiprbrenan", "test", "/home/phil/files/");
-
+  
     writeFolderUsingSavedToken("philiprbrenan", "test", "files", "/home/phil/files/");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
 
 =head2 writeCommitUsingSavedToken($userid, $repository, $source, $accessFolderOrToken)
 
@@ -1901,11 +1914,11 @@ Write all the files in a local folder to a named L<GitHub|https://github.com/phi
 B<Example:>
 
 
-
+  
     writeCommitUsingSavedToken("philiprbrenan", "test", "/home/phil/files/");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     writeFolderUsingSavedToken("philiprbrenan", "test", "files", "/home/phil/files/");
-
+  
 
 =head2 deleteFileUsingSavedToken($userid, $repository, $target, $accessFolderOrToken)
 
@@ -1920,10 +1933,10 @@ Delete a file on L<GitHub|https://github.com/philiprbrenan> using a saved token
 B<Example:>
 
 
-
+  
     deleteFileUsingSavedToken("philiprbrenan", "test", "aaa.data");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
 
 =head2 getRepositoryUsingSavedToken($userid, $repository, $accessFolderOrToken)
 
@@ -1937,11 +1950,11 @@ Get repository details from L<GitHub|https://github.com/philiprbrenan> using a s
 B<Example:>
 
 
-
+  
     my $r = getRepositoryUsingSavedToken(q(philiprbrenan), q(aaa));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Get repository using saved access token succeeded";
-
+  
 
 =head2 getRepositoryUpdatedAtUsingSavedToken($userid, $repository, $accessFolderOrToken)
 
@@ -1955,11 +1968,11 @@ Get the last time a repository was updated via the 'updated_at' field using a sa
 B<Example:>
 
 
-
+  
     my $u = getRepositoryUpdatedAtUsingSavedToken(q(philiprbrenan), q(aaa));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     success "Get repository updated_at field succeeded";
-
+  
 
 =head1 Actions
 
@@ -1976,18 +1989,18 @@ Create an issue in the current L<GitHub|https://github.com/philiprbrenan> reposi
 B<Example:>
 
 
-
+  
     createIssueInCurrentRepo("Hello World", "Need to run Hello World");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
     writeFileFromCurrentRun("output.text", "Hello World");
     writeFileFromFileFromCurrentRun("output.txt");
     writeBinaryFileFromFileInCurrentRun("image.jpg", "out/image.jpg");
-
+  
 
 =head2 writeFileFromCurrentRun($target, $text)
 
-Write test into a file in the current L<GitHub|https://github.com/philiprbrenan> repository if we are running on L<GitHub|https://github.com/philiprbrenan>.
+Write text into a file in the current L<GitHub|https://github.com/philiprbrenan> repository if we are running on L<GitHub|https://github.com/philiprbrenan>.
 
      Parameter  Description
   1  $target    The target file name in the repo
@@ -1997,13 +2010,13 @@ B<Example:>
 
 
     createIssueInCurrentRepo("Hello World", "Need to run Hello World");
-
-
+  
+  
     writeFileFromCurrentRun("output.text", "Hello World");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     writeFileFromFileFromCurrentRun("output.txt");
     writeBinaryFileFromFileInCurrentRun("image.jpg", "out/image.jpg");
-
+  
 
 =head2 writeFileFromFileFromCurrentRun($target)
 
@@ -2016,13 +2029,13 @@ B<Example:>
 
 
     createIssueInCurrentRepo("Hello World", "Need to run Hello World");
-
+  
     writeFileFromCurrentRun("output.text", "Hello World");
-
+  
     writeFileFromFileFromCurrentRun("output.txt");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     writeBinaryFileFromFileInCurrentRun("image.jpg", "out/image.jpg");
-
+  
 
 =head2 writeBinaryFileFromFileInCurrentRun($target, $source)
 
@@ -2036,13 +2049,13 @@ B<Example:>
 
 
     createIssueInCurrentRepo("Hello World", "Need to run Hello World");
-
+  
     writeFileFromCurrentRun("output.text", "Hello World");
     writeFileFromFileFromCurrentRun("output.txt");
-
+  
     writeBinaryFileFromFileInCurrentRun("image.jpg", "out/image.jpg");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
 
 =head1 Access tokens
 
@@ -2060,21 +2073,21 @@ B<Example:>
 
     my $d = temporaryFolder;
     my $t = join '', 1..20;
-
+  
     my $g = gitHub
      (userid                    => q(philiprbrenan),
       personalAccessToken       => $t,
       personalAccessTokenFolder => $d,
      );
-
-
+  
+  
             $g->savePersonalAccessToken;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     my $T = $g->loadPersonalAccessToken;
-
+  
     confess "Load/Save token FAILED" unless $t eq $T;
     success "Load/Save token succeeded"
-
+  
 
 =head2 loadPersonalAccessToken($gitHub)
 
@@ -2088,21 +2101,21 @@ B<Example:>
 
     my $d = temporaryFolder;
     my $t = join '', 1..20;
-
+  
     my $g = gitHub
      (userid                    => q(philiprbrenan),
       personalAccessToken       => $t,
       personalAccessTokenFolder => $d,
      );
-
+  
             $g->savePersonalAccessToken;
-
+  
     my $T = $g->loadPersonalAccessToken;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-
+  
     confess "Load/Save token FAILED" unless $t eq $T;
     success "Load/Save token succeeded"
-
+  
 
 
 =head1 Hash Definitions
@@ -2311,7 +2324,7 @@ Create a L<GitHub|https://github.com/philiprbrenan> object for the  current repo
 
 32 L<writeCommitUsingSavedToken|/writeCommitUsingSavedToken> - Write all the files in a local folder to a named L<GitHub|https://github.com/philiprbrenan> repository using a personal access token as supplied or saved in a file.
 
-33 L<writeFileFromCurrentRun|/writeFileFromCurrentRun> - Write test into a file in the current L<GitHub|https://github.com/philiprbrenan> repository if we are running on L<GitHub|https://github.com/philiprbrenan>.
+33 L<writeFileFromCurrentRun|/writeFileFromCurrentRun> - Write text into a file in the current L<GitHub|https://github.com/philiprbrenan> repository if we are running on L<GitHub|https://github.com/philiprbrenan>.
 
 34 L<writeFileFromFileFromCurrentRun|/writeFileFromFileFromCurrentRun> - Write to a file in the current L<GitHub|https://github.com/philiprbrenan> repository by copying a local file if we are running on L<GitHub|https://github.com/philiprbrenan>.
 
@@ -2336,7 +2349,7 @@ L<http://www.appaapps.com|http://www.appaapps.com>
 
 =head1 Copyright
 
-Copyright (c) 2016-2021 Philip R Brenan.
+Copyright (c) 2016-2023 Philip R Brenan.
 
 This module is free software. It may be used, redistributed and/or modified
 under the same terms as Perl itself.

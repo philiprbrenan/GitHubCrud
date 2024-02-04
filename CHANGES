@@ -1,3 +1,5 @@
-
 2020-10-30 Now available on GitHub at: https://github.com/philiprbrenan/GitHubCrud
            Please create a pull request from a cloned copy.
+2024-02-03 Uploads png/jpg/wav files correctly.
+2024-02-04 Does not upload files whose sha matches the sha of the copy of the
+           file already on GitHub because they are presumably the same.

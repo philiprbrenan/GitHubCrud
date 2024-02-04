@@ -7,7 +7,7 @@
 #podDocumentation
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20240202;
+our $VERSION = 20240203;
 use warnings FATAL => qw(all);
 use strict;
 use Carp              qw(confess);
@@ -25,6 +25,25 @@ sub api          { "https://api.github.com/" }                                  
 sub accessFolder { q(/etc/GitHubCrudPersonalAccessToken) };                     # Personal access tokens are stored in a file in this folder with the name of the userid of the L<GitHub> repository
 
 my %shas;                                                                       # L<SHA> digests already seen - used to optimize write and delete
+
+sub specialFileData($)                                                          #P Do not encode or decode data with a known file signature
+ {my ($d) = @_;                                                                 # String to check
+  my $h = '';
+  if ($d and length($d) > 8)                                                    # Read file magic number
+   {for my $e(0..7)
+     {$h .= sprintf("%x", ord(substr($d, $e, 1)));
+     }
+    return 1 if $h =~ m(\A504b)i;                                               # PK Zip
+    return 1 if $h =~ m(\Ad0cf11e0)i;                                           # OLE files
+    return 1 if $h =~ m(\Affd8ff)i;                                             # Jpg
+    return 1 if $h =~ m(\A89504e470d0a1a0a)i;                                   # Png
+    return 1 if $h =~ m(\A4D546864)i;                                           # Midi
+    return 1 if $h =~ m(\A49443340)i;                                           # Mp3
+    return 1 if $d =~ m(\A.PNG);                                                # Png
+    return 1 if $d =~ m(\ARIFF....WAVEfmt);                                     # Wav
+   }
+  0                                                                             # Not a special file
+ }
 
 sub GitHub::Crud::Response::new($$)                                             #P Execute a request against L<GitHub> and decode the response
  {my ($gitHub, $request) = @_;                                                  # Github, request string
@@ -183,7 +202,7 @@ sub getSha($)                                                                   
 
   my $length = length($data);
   my $blob   = 'blob' . " $length\0" . $data;
-  utf8::encode($blob);
+  utf8::encode($blob) unless specialFileData($data);                            # Utf8 is assumed for things which are not known to be files containing images, sounds or other binary data in a well known format
   my $r = eval{sha1_hex($blob)};
   confess $@ if $@;
   $r
@@ -345,25 +364,6 @@ sub list($)                                                                     
   @{$gitHub->fileList}
  }
 
-sub specialFileData($)                                                          #P Do not encode or decode data with a known file signature
- {my ($d) = @_;                                                                 # String to check
-  my $h = '';
-  if ($d and length($d) > 8)                                                    # Read file magic number
-   {for my $e(0..7)
-     {$h .= sprintf("%x", ord(substr($d, $e, 1)));
-     }
-    return 1 if $h =~ m(\A504b)i;                                               # PK Zip
-    return 1 if $h =~ m(\Ad0cf11e0)i;                                           # OLE files
-    return 1 if $h =~ m(\Affd8ff)i;                                             # Jpg
-    return 1 if $h =~ m(\A89504e470d0a1a0a)i;                                   # Png
-    return 1 if $h =~ m(\A4D546864)i;                                           # Midi
-    return 1 if $h =~ m(\A49443340)i;                                           # Mp3
-    return 1 if $d =~ m(\A.PNG);                                                # Png
-    return 1 if $d =~ m(\ARIFF....WAVEfmt);                                     # Wav
-   }
-  0                                                                             # Not a special file
- }
-
 sub read($;$)                                                                   # Read data from a file on L<GitHub>.\mRequired attributes: L<userid|/userid>, L<repository|/repository>.\mOptional attributes: L<gitFile|/gitFile> = the file to read, L<refOrBranch|/refOrBranch>, L<patKey|/patKey>.\mIf the read operation is successful, L<failed|/failed> is set to false and L<readData|/readData> is set to the data read from the file.\mIf the read operation fails then L<failed|/failed> is set to true and L<readData|/readData> is set to B<undef>.\mReturns the data read or B<undef> if no file was found.
  {my ($gitHub, $File) = @_;                                                     # GitHub, file to read if not specified in gitFile
 
@@ -426,12 +426,12 @@ sub write($$;$)                                                                 
   $gitHub->gitFile = $save;                                                     # Restore file name
   my $sha = $s ? ', "sha": "'. $s .'"' : '';                                    # L<sha> of existing file or blank string if no existing file
 
-# if ($s and my $S = getSha($data))                                             # L<sha> of new data
-#  {if ($s eq $S)                                                               # Duplicate if the L<sha>s match
-#    {$gitHub->failed = undef;
-#     return 1;
-#    }
-#  }
+  if ($s and my $S = getSha($data))                                             # Skip upload if file has not changed. L<sha> of new data
+   {if ($s eq $S)                                                               # Duplicate if the L<sha>s match
+     {$gitHub->failed = undef;
+      return "same";
+    }
+  }
 
   my $denc = encodeBase64($data) =~ s/\n//gsr;
 

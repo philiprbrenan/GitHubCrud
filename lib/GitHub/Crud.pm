@@ -7,7 +7,7 @@
 #podDocumentation
 package GitHub::Crud;
 use v5.16;
-our $VERSION = 20240203;
+our $VERSION = 20240205;
 use warnings FATAL => qw(all);
 use strict;
 use Carp              qw(confess);
@@ -201,16 +201,16 @@ sub getSha($)                                                                   
  {my ($data) = @_;                                                              # String possibly containing non ascii code points
 
   my $length = length($data);
-  my $blob   = 'blob' . " $length\0" . $data;
-  utf8::encode($blob) unless specialFileData($data);                            # Utf8 is assumed for things which are not known to be files containing images, sounds or other binary data in a well known format
-  my $r = eval{sha1_hex($blob)};
+  utf8::encode($data) unless specialFileData($data);                            # Utf8 is assumed for things which are not known to be files containing images, sounds or other binary data in a well known format
+  my $e = "blob $length\0$data";                                                # See: https://alblue.bandlem.com/2011/08/git-tip-of-week-objects.html
+  my $r = eval{sha1_hex($e)};
   confess $@ if $@;
   $r
  }
 
 if (0)                                                                          # Test L<sha>
- {my $sha = getSha("<h1>Hello World</h1>\n");
-  my $Sha = "f3e333e80d224c631f2ff51b9b9f7189ad349c15";
+ {my $sha = getSha("");
+  my $Sha = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
   unless($sha eq $Sha)
    {confess "Wrong SHA: $sha".
             "Should be: $Sha";
@@ -422,16 +422,15 @@ sub write($$;$)                                                                 
   my $url  = url;
   my $save = $gitHub->gitFile;                                                  # Save any existing file name as we might need to update it to get the sha if the target file was supplied as a parameter to this sub
   $gitHub->gitFile = $File if $File;                                            # Set target file name so we can get its sha
-  my $s    = $gitHub->getExistingSha || getSha($data);                          # Get the L<sha> of the file if the file exists
+  my $s    = getSha($data);                                                     # Get the L<sha> of the file locally
+  my $S    = $gitHub->getExistingSha || '';                                     # Get the L<sha> of the file on github
   $gitHub->gitFile = $save;                                                     # Restore file name
-  my $sha = $s ? ', "sha": "'. $s .'"' : '';                                    # L<sha> of existing file or blank string if no existing file
+  my $sha = $S ? qq(, "sha": "$S") : q();                                       # L<sha> of existing file to replace if present
 
-  if ($s and my $S = getSha($data))                                             # Skip upload if file has not changed. L<sha> of new data
-   {if ($s eq $S)                                                               # Duplicate if the L<sha>s match
-     {$gitHub->failed = undef;
-      return "same";
-    }
-  }
+  if ($s eq $S)                                                                 # Duplicate if the L<sha>s match
+   {$gitHub->failed = undef;
+    return "same   ";                                                           # Matches created and updated
+   }
 
   my $denc = encodeBase64($data) =~ s/\n//gsr;
 
@@ -450,7 +449,7 @@ sub write($$;$)                                                                 
   unlink $t;                                                                    # Cleanup
 
   my $status = $r->status;                                                      # Check response code
-  my $success = $status == 200 ? 'updated' : $status == 201 ? 'created' : undef;# Updated, created
+  my $success = $status == 200 ? ($S ? 'updated' : 'created') : undef;          # Updated, created
   $gitHub->failed = $success ? undef : 1;
   !$success and $gitHub->confessOnFailure and confess dump($gitHub);            # Confess to any failure if so requested
 

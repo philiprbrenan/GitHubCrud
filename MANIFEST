@@ -2,7 +2,6 @@ Build.PL
 CHANGES
 CONTRIBUTING
 lib/GitHub/Crud.pm
-lib/GitHub/CrudBeforeNoEncode.pm
 MANIFEST
 README
 README.md

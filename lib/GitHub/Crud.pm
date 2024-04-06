@@ -41,6 +41,7 @@ sub specialFileData($)                                                          
     return 1 if $h =~ m(\A49443340)i;                                           # Mp3
     return 1 if $d =~ m(\A.PNG);                                                # Png
     return 1 if $d =~ m(\ARIFF....WAVEfmt);                                     # Wav
+    return 1 if $d =~ m(\A....ftypavif);                                        # Avif
    }
   0                                                                             # Not a special file
  }
@@ -174,6 +175,7 @@ genHash(q(GitHub::Crud::Response),                                              
   X_XSS_Protection                        => undef,
   x_ratelimit_resource                    => undef,
   x_github_api_version_selected           => undef,
+  x_accepted_github_permissions           => undef,
  );
 
 genHash(q(GitHub::Crud::Response::Data),                                        # Response from a request made to L<GitHub>.

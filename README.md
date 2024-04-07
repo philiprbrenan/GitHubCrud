@@ -82,7 +82,7 @@ The following code will install a personal access token for github userid
 
 Create, Read, Update, Delete files, commits, issues, and web hooks on GitHub.
 
-Version 20240205.
+Version 20240408.
 
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
@@ -1038,7 +1038,7 @@ A personal access token with scope "public\_repo" as generated on page: https://
 
 #### personalAccessTokenFolder
 
-The folder into which to save personal access tokens. Set to q(/etc/GitHubCrudPersonalAccessToken) by default.
+The folder into which to save personal access tokens. Set to **/etc/GitHubCrudPersonalAccessToken** by default.
 
 #### private
 

@@ -1,4 +1,4 @@
-# Test 2024-04-07 at 19:52:00
+# Test 2024-04-07 at 19:55:19
 
 name: Test
 
@@ -47,4 +47,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        perl -Idtt/lib -Ilib -MGitHub::Crud -e"&GitHub::Crud::listRepositoryUsingSavedToken(@ARGV)" -- philiprbrenan GitHubCrud
+        perl -Idtt/lib -Ilib -MGitHub::Crud -e"say STDERR &GitHub::Crud::listRepositoryUsingSavedToken(@ARGV)" -- philiprbrenan GitHubCrud

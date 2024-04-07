@@ -1,3 +1,7 @@
+<div>
+    <p><a href="https://github.com/philiprbrenan/GitHubCrud"><img src="https://github.com/philiprbrenan/GitHubCrud/workflows/Test/badge.svg"></a>
+</div>
+
 # Name
 
 GitHub::Crud - Create, Read, Update, Delete files, commits, issues, and web hooks on GitHub.

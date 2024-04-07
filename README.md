@@ -838,6 +838,12 @@ List the files in a repository using a saved token
     2  $repository           Repository name
     3  $accessFolderOrToken  Optionally: location of access token.
 
+**Example:**
+
+      listRepositoryUsingSavedToken("philiprbrenan", "test", "/home/phil/files/");  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+
 ## getRepositoryUpdatedAtUsingSavedToken   ($userid, $repository, $accessFolderOrToken)
 
 Get the last time a repository was updated via the 'updated\_at' field using a saved token and return the time in number of seconds since the Unix epoch.

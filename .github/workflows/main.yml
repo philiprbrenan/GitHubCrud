@@ -1,4 +1,4 @@
-# Build and test CPAN module: GitHubCrud
+# Test 2024-04-07 at 19:34:15
 
 name: Test
 
@@ -6,45 +6,39 @@ on:
   push
 
 jobs:
+
   test:
+    permissions: write-all
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        ref: 'main'
 
-    - name: Install
-      run: |
-        sudo apt update
-        sudo apt -y install build-essential tree
+    - uses: actions/checkout@v3
+      with:
+        repository: philiprbrenan/DataTableText
+        path: dtt
 
-    - name: Install JSON
-      run: |
-        sudo cpan install JSON
+    - name: Cpan
+      run:  sudo cpan install -T Data::Dump Digest::SHA1
 
-    - name: Install Date::Manip
-      run: |
-        sudo cpan install Date::Manip
+    - name: Test Perl implemented integrated circuits
+      run:
+        perl -Idtt/lib lib/GitHub/Crud.pm
 
-    - name: Install Digest::SHA1
-      run: |
-        sudo cpan install Digest::SHA1
+    - name: Install Tree
+      run:
+        sudo apt install tree
 
-    - name: Install Module::Build
-      run: |
-        sudo cpan install Module::Build
+    - name: Tree
+      run:
+        tree
 
-    - name: Install Math::Permute::List
-      run: |
-        sudo cpan install Math::Permute::List
-
-    - name: Install Data::Table::Text
-      run: |
-        sudo cpan install Data::Table::Text
-
-
-
-    - name: Test
+    - name: Upload test files
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         tree
-        perl Build.PL
-        perl Build test
+        perl -Idtt/lib -Igh/lib -MGitHub::Crud -e"&GitHub::Crud::writeFolderUsingSavedToken(@ARGV)" -- philiprbrenan GitHubCrud test/ test/

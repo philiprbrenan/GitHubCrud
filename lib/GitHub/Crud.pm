@@ -14,7 +14,6 @@ use Carp              qw(confess);
 use Data::Dump        qw(dump);
 use Data::Table::Text qw(:all !fileList);
 use Digest::SHA1      qw(sha1_hex);
-#use Date::Manip;
 use Scalar::Util      qw(blessed reftype looks_like_number);
 use Time::HiRes       qw(time);
 use Encode            qw(encode decode);
@@ -1093,6 +1092,8 @@ writeFolderUsingSavedToken
 =pod
 
 =encoding utf-8
+
+=for html <p><a href="https://github.com/philiprbrenan/GitHubCrud"><img src="https://github.com/philiprbrenan/GitHubCrud/workflows/Test/badge.svg"></a>
 
 =head1 Name
 

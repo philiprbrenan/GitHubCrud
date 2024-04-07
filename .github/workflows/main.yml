@@ -1,4 +1,4 @@
-# Test 2024-04-07 at 19:49:46
+# Test 2024-04-07 at 19:52:00
 
 name: Test
 
@@ -40,8 +40,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        perl -Idtt/lib -MData::Table::Text -e"owf('Data::Table::Text::test/zzz.txt', 'AAAA')"
-        perl -Idtt/lib -Ilib -MGitHub::Crud -e"&GitHub::Crud::writeFolderUsingSavedToken(@ARGV)" -- philiprbrenan GitHubCrud test/ test/
+        perl -Idtt/lib       -MData::Table::Text -e"Data::Table::Text::owf('test/zzz.txt', 'AAAA')"
+        perl -Idtt/lib -Ilib -MGitHub::Crud      -e"&GitHub::Crud::writeFolderUsingSavedToken(@ARGV)" -- philiprbrenan GitHubCrud test/ test/
 
     - name: List repo
       env:

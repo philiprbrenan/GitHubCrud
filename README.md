@@ -671,7 +671,7 @@ Returns true if the issue was created successfully else false.
 
 # Using saved access tokens
 
-Call methods directly using a saved access token rather than first creating a [GitHub](https://github.com/philiprbrenan) description object and then calling methods using it. This is often more convenient if you just want to perform one or two actions using a perl one liner. See: [https://github.com/philiprbrenan/SiliconChip/blob/main/.github/workflows/main.yml](https://github.com/philiprbrenan/SiliconChip/blob/main/.github/workflows/main.yml) for an example.
+Call methods directly using a saved access token rather than first creating a [GitHub](https://github.com/philiprbrenan) description object and then calling methods using it. This is often more convenient if you just want to perform one or two actions using a perl one liner. See: [https://github.com/philiprbrenan/GitHubCrud/blob/main/.github/workflows/main.yml](https://github.com/philiprbrenan/GitHubCrud/blob/main/.github/workflows/main.yml) for examples in action.
 
 ## createIssueFromSavedToken   ($userid, $repository, $title, $body, $accessFolderOrToken)
 

@@ -859,7 +859,7 @@ sub createIssue($)                                                              
   $success ? 1 : undef                                                          # Return true on success
  }
 
-#D1 Using saved access tokens                                                   # Call methods directly using a saved access token rather than first creating a L<GitHub> description object and then calling methods using it. This is often more convenient if you just want to perform one or two actions using a perl one liner. See: L<https://github.com/philiprbrenan/SiliconChip/blob/main/.github/workflows/main.yml> for an example.
+#D1 Using saved access tokens                                                   # Call methods directly using a saved access token rather than first creating a L<GitHub> description object and then calling methods using it. This is often more convenient if you just want to perform one or two actions using a perl one liner. See: L<https://github.com/philiprbrenan/GitHubCrud/blob/main/.github/workflows/main.yml> for examples in action.
 
 sub createIssueFromSavedToken($$$$;$)                                           # Create an issue on L<GitHub> using an access token as supplied or saved in a file using L<savePersonalAccessToken|/savePersonalAccessToken>.\mReturns true if the issue was created successfully else false.
  {my ($userid, $repository, $title, $body, $accessFolderOrToken) = @_;          # Userid on GitHub, repository name, issue title, issue body, location of access token.
@@ -1799,7 +1799,7 @@ B<Example:>
 
 =head1 Using saved access tokens
 
-Call methods directly using a saved access token rather than first creating a L<GitHub|https://github.com/philiprbrenan> description object and then calling methods using it. This is often more convenient if you just want to perform one or two actions using a perl one liner. See: L<https://github.com/philiprbrenan/SiliconChip/blob/main/.github/workflows/main.yml> for an example.
+Call methods directly using a saved access token rather than first creating a L<GitHub|https://github.com/philiprbrenan> description object and then calling methods using it. This is often more convenient if you just want to perform one or two actions using a perl one liner. See: L<https://github.com/philiprbrenan/GitHubCrud/blob/main/.github/workflows/main.yml> for examples in action.
 
 =head2 createIssueFromSavedToken   ($userid, $repository, $title, $body, $accessFolderOrToken)
 

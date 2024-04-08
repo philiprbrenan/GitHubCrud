@@ -909,10 +909,12 @@ sub writeFolderUsingSavedToken($$$$;$)                                          
   $g->personalAccessTokenFolder = $accessFolderOrToken;
   $g->loadPersonalAccessToken;
 
+  my @r;
   for my $file(searchDirectoryTreesForMatchingFiles($localFolder))
    {$g->gitFile = swapFilePrefix($file, $localFolder, $targetFolder);
-    $g->write(readBinaryFile($file));
+    push @r, [$g->write(readBinaryFile($file)), $file];
    }
+  @r
  }
 
 sub writeCommitUsingSavedToken($$$;$)                                           # Write all the files in a local folder to a named L<GitHub> repository using a personal access token as supplied or saved in a file.

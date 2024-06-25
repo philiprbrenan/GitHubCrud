@@ -175,6 +175,8 @@ genHash(q(GitHub::Crud::Response),                                              
   x_ratelimit_resource                    => undef,
   x_github_api_version_selected           => undef,
   x_accepted_github_permissions           => undef,
+  x_envoy_decorator_operation             => undef,
+  x_envoy_upstream_service_time           => undef,
  );
 
 genHash(q(GitHub::Crud::Response::Data),                                        # Response from a request made to L<GitHub>.

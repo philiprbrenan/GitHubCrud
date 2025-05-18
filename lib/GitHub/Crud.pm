@@ -1024,6 +1024,22 @@ sub writeBinaryFileFromFileInCurrentRun($$)                                     
    }
  }
 
+sub pushToGitHub($$$@)                                                          # Push some files to github
+ {my ($user, $repo, $home, @files) = @_;                                        # User id on github, repo name, home folder name, list of files to upload if they have changed since the last time an upload was performed
+
+  @files = changedFiles ".changedFiles", @files if 1;                           # Filter out files that have not changed
+
+  for my $s(@files)                                                             # Upload each selected file
+   {my $c = readBinaryFile $s;                                                  # Load file
+
+    $c = expandWellKnownWordsAsUrlsInMdFormat($c) if $s =~ m(README);           # Expand read me file
+
+    my $t = swapFilePrefix $s, $home;                                           # File on github
+    my $w = writeFileUsingSavedToken($user, $repo, $t, $c);                     # Write file into github
+    lll "$w  $t";
+   }
+ }
+
 #D1 Access tokens                                                               # Load and save access tokens. Some L<GitHub> requests must be signed with an L<OAuth>  access token. These methods help you store and reuse such tokens. Access tokens can be created at: L<https://github.com/settings/tokens>.
 
 sub savePersonalAccessToken($)                                                  # Save a L<GitHub> personal access token by userid in folder L<personalAccessTokenFolder|/personalAccessTokenFolder>.
@@ -1081,6 +1097,7 @@ getRepository
 getRepositoryUsingSavedToken
 getRepositoryUpdatedAtUsingSavedToken
 listRepositoryUsingSavedToken
+pushToGitHub
 readFileUsingSavedToken
 writeBinaryFileFromFileInCurrentRun
 writeCommitUsingSavedToken
@@ -2092,6 +2109,16 @@ B<Example:>
 
   
 
+=head2 pushToGitHub($user, $repo, $home, @files)
+
+Push some files to github
+
+     Parameter  Description
+  1  $user      User id on github
+  2  $repo      Repo name
+  3  $home      Home folder name
+  4  @files     List of files to upload if they have changed since the last time an upload was performed
+
 =head1 Access tokens
 
 Load and save access tokens. Some L<GitHub|https://github.com/philiprbrenan> requests must be signed with an L<Oauth|https://en.wikipedia.org/wiki/OAuth>  access token. These methods help you store and reuse such tokens. Access tokens can be created at: L<https://github.com/settings/tokens>.
@@ -2332,35 +2359,37 @@ Create a L<GitHub|https://github.com/philiprbrenan> object for the  current repo
 
 22 L<new|/new> - Create a new L<GitHub|https://github.com/philiprbrenan> object with attributes as described at: L<GitHub::Crud Definition>.
 
-23 L<read|/read> - Read data from a file on L<GitHub|https://github.com/philiprbrenan>.
+23 L<pushToGitHub|/pushToGitHub> - Push some files to github
 
-24 L<readBlob|/readBlob> - Read a L<blob|https://en.wikipedia.org/wiki/Binary_large_object> from L<GitHub|https://github.com/philiprbrenan>.
+24 L<read|/read> - Read data from a file on L<GitHub|https://github.com/philiprbrenan>.
 
-25 L<readFileUsingSavedToken|/readFileUsingSavedToken> - Read from a file on L<GitHub|https://github.com/philiprbrenan> using a personal access token as supplied or saved in a file.
+25 L<readBlob|/readBlob> - Read a L<blob|https://en.wikipedia.org/wiki/Binary_large_object> from L<GitHub|https://github.com/philiprbrenan>.
 
-26 L<rename|/rename> - Rename a source file on L<GitHub|https://github.com/philiprbrenan> if the target file name is not already in use.
+26 L<readFileUsingSavedToken|/readFileUsingSavedToken> - Read from a file on L<GitHub|https://github.com/philiprbrenan> using a personal access token as supplied or saved in a file.
 
-27 L<savePersonalAccessToken|/savePersonalAccessToken> - Save a L<GitHub|https://github.com/philiprbrenan> personal access token by userid in folder L<personalAccessTokenFolder|/personalAccessTokenFolder>.
+27 L<rename|/rename> - Rename a source file on L<GitHub|https://github.com/philiprbrenan> if the target file name is not already in use.
 
-28 L<write|/write> - Write the specified data into a file on L<GitHub|https://github.com/philiprbrenan>.
+28 L<savePersonalAccessToken|/savePersonalAccessToken> - Save a L<GitHub|https://github.com/philiprbrenan> personal access token by userid in folder L<personalAccessTokenFolder|/personalAccessTokenFolder>.
 
-29 L<writeBinaryFileFromFileInCurrentRun|/writeBinaryFileFromFileInCurrentRun> - Write to a file in the current L<GitHub|https://github.com/philiprbrenan> repository by copying a local binary file if we are running on L<GitHub|https://github.com/philiprbrenan>.
+29 L<write|/write> - Write the specified data into a file on L<GitHub|https://github.com/philiprbrenan>.
 
-30 L<writeBlob|/writeBlob> - Write data into a L<GitHub|https://github.com/philiprbrenan> as a L<blob|https://en.wikipedia.org/wiki/Binary_large_object> that can be referenced by future commits.
+30 L<writeBinaryFileFromFileInCurrentRun|/writeBinaryFileFromFileInCurrentRun> - Write to a file in the current L<GitHub|https://github.com/philiprbrenan> repository by copying a local binary file if we are running on L<GitHub|https://github.com/philiprbrenan>.
 
-31 L<writeCommit|/writeCommit> - Write all the files in a B<$folder> (or just the the named files) into a L<GitHub|https://github.com/philiprbrenan> repository in parallel as a commit on the specified branch.
+31 L<writeBlob|/writeBlob> - Write data into a L<GitHub|https://github.com/philiprbrenan> as a L<blob|https://en.wikipedia.org/wiki/Binary_large_object> that can be referenced by future commits.
 
-32 L<writeCommitUsingSavedToken|/writeCommitUsingSavedToken> - Write all the files in a local folder to a named L<GitHub|https://github.com/philiprbrenan> repository using a personal access token as supplied or saved in a file.
+32 L<writeCommit|/writeCommit> - Write all the files in a B<$folder> (or just the the named files) into a L<GitHub|https://github.com/philiprbrenan> repository in parallel as a commit on the specified branch.
 
-33 L<writeFileFromCurrentRun|/writeFileFromCurrentRun> - Write text into a file in the current L<GitHub|https://github.com/philiprbrenan> repository if we are running on L<GitHub|https://github.com/philiprbrenan>.
+33 L<writeCommitUsingSavedToken|/writeCommitUsingSavedToken> - Write all the files in a local folder to a named L<GitHub|https://github.com/philiprbrenan> repository using a personal access token as supplied or saved in a file.
 
-34 L<writeFileFromFileFromCurrentRun|/writeFileFromFileFromCurrentRun> - Write to a file in the current L<GitHub|https://github.com/philiprbrenan> repository by copying a local file if we are running on L<GitHub|https://github.com/philiprbrenan>.
+34 L<writeFileFromCurrentRun|/writeFileFromCurrentRun> - Write text into a file in the current L<GitHub|https://github.com/philiprbrenan> repository if we are running on L<GitHub|https://github.com/philiprbrenan>.
 
-35 L<writeFileFromFileUsingSavedToken|/writeFileFromFileUsingSavedToken> - Copy a file to L<GitHub|https://github.com/philiprbrenan>  using a personal access token as supplied or saved in a file.
+35 L<writeFileFromFileFromCurrentRun|/writeFileFromFileFromCurrentRun> - Write to a file in the current L<GitHub|https://github.com/philiprbrenan> repository by copying a local file if we are running on L<GitHub|https://github.com/philiprbrenan>.
 
-36 L<writeFileUsingSavedToken|/writeFileUsingSavedToken> - Write to a file on L<GitHub|https://github.com/philiprbrenan> using a personal access token as supplied or saved in a file.
+36 L<writeFileFromFileUsingSavedToken|/writeFileFromFileUsingSavedToken> - Copy a file to L<GitHub|https://github.com/philiprbrenan>  using a personal access token as supplied or saved in a file.
 
-37 L<writeFolderUsingSavedToken|/writeFolderUsingSavedToken> - Write all the files in a local folder to a target folder on a named L<GitHub|https://github.com/philiprbrenan> repository using a personal access token as supplied or saved in a file.
+37 L<writeFileUsingSavedToken|/writeFileUsingSavedToken> - Write to a file on L<GitHub|https://github.com/philiprbrenan> using a personal access token as supplied or saved in a file.
+
+38 L<writeFolderUsingSavedToken|/writeFolderUsingSavedToken> - Write all the files in a local folder to a target folder on a named L<GitHub|https://github.com/philiprbrenan> repository using a personal access token as supplied or saved in a file.
 
 =head1 Installation
 

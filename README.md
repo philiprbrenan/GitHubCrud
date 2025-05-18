@@ -942,6 +942,16 @@ Write to a file in the current [GitHub](https://github.com/philiprbrenan) reposi
 
     
 
+## pushToGitHub($user, $repo, $home, @files)
+
+Push some files to github
+
+       Parameter  Description
+    1  $user      User id on github
+    2  $repo      Repo name
+    3  $home      Home folder name
+    4  @files     List of files to upload if they have changed since the last time an upload was performed
+
 # Access tokens
 
 Load and save access tokens. Some [GitHub](https://github.com/philiprbrenan) requests must be signed with an [Oauth](https://en.wikipedia.org/wiki/OAuth)  access token. These methods help you store and reuse such tokens. Access tokens can be created at: [https://github.com/settings/tokens](https://github.com/settings/tokens).
@@ -1156,35 +1166,37 @@ Create a [GitHub](https://github.com/philiprbrenan) object for the  current repo
 
 22 [new](#new) - Create a new [GitHub](https://github.com/philiprbrenan) object with attributes as described at: ["GitHub::Crud Definition"](#github-crud-definition).
 
-23 [read](#read) - Read data from a file on [GitHub](https://github.com/philiprbrenan).
+23 [pushToGitHub](#pushtogithub) - Push some files to github
 
-24 [readBlob](#readblob) - Read a [blob](https://en.wikipedia.org/wiki/Binary_large_object) from [GitHub](https://github.com/philiprbrenan).
+24 [read](#read) - Read data from a file on [GitHub](https://github.com/philiprbrenan).
 
-25 [readFileUsingSavedToken](#readfileusingsavedtoken) - Read from a file on [GitHub](https://github.com/philiprbrenan) using a personal access token as supplied or saved in a file.
+25 [readBlob](#readblob) - Read a [blob](https://en.wikipedia.org/wiki/Binary_large_object) from [GitHub](https://github.com/philiprbrenan).
 
-26 [rename](#rename) - Rename a source file on [GitHub](https://github.com/philiprbrenan) if the target file name is not already in use.
+26 [readFileUsingSavedToken](#readfileusingsavedtoken) - Read from a file on [GitHub](https://github.com/philiprbrenan) using a personal access token as supplied or saved in a file.
 
-27 [savePersonalAccessToken](#savepersonalaccesstoken) - Save a [GitHub](https://github.com/philiprbrenan) personal access token by userid in folder [personalAccessTokenFolder](#personalaccesstokenfolder).
+27 [rename](#rename) - Rename a source file on [GitHub](https://github.com/philiprbrenan) if the target file name is not already in use.
 
-28 [write](#write) - Write the specified data into a file on [GitHub](https://github.com/philiprbrenan).
+28 [savePersonalAccessToken](#savepersonalaccesstoken) - Save a [GitHub](https://github.com/philiprbrenan) personal access token by userid in folder [personalAccessTokenFolder](#personalaccesstokenfolder).
 
-29 [writeBinaryFileFromFileInCurrentRun](#writebinaryfilefromfileincurrentrun) - Write to a file in the current [GitHub](https://github.com/philiprbrenan) repository by copying a local binary file if we are running on [GitHub](https://github.com/philiprbrenan).
+29 [write](#write) - Write the specified data into a file on [GitHub](https://github.com/philiprbrenan).
 
-30 [writeBlob](#writeblob) - Write data into a [GitHub](https://github.com/philiprbrenan) as a [blob](https://en.wikipedia.org/wiki/Binary_large_object) that can be referenced by future commits.
+30 [writeBinaryFileFromFileInCurrentRun](#writebinaryfilefromfileincurrentrun) - Write to a file in the current [GitHub](https://github.com/philiprbrenan) repository by copying a local binary file if we are running on [GitHub](https://github.com/philiprbrenan).
 
-31 [writeCommit](#writecommit) - Write all the files in a **$folder** (or just the the named files) into a [GitHub](https://github.com/philiprbrenan) repository in parallel as a commit on the specified branch.
+31 [writeBlob](#writeblob) - Write data into a [GitHub](https://github.com/philiprbrenan) as a [blob](https://en.wikipedia.org/wiki/Binary_large_object) that can be referenced by future commits.
 
-32 [writeCommitUsingSavedToken](#writecommitusingsavedtoken) - Write all the files in a local folder to a named [GitHub](https://github.com/philiprbrenan) repository using a personal access token as supplied or saved in a file.
+32 [writeCommit](#writecommit) - Write all the files in a **$folder** (or just the the named files) into a [GitHub](https://github.com/philiprbrenan) repository in parallel as a commit on the specified branch.
 
-33 [writeFileFromCurrentRun](#writefilefromcurrentrun) - Write text into a file in the current [GitHub](https://github.com/philiprbrenan) repository if we are running on [GitHub](https://github.com/philiprbrenan).
+33 [writeCommitUsingSavedToken](#writecommitusingsavedtoken) - Write all the files in a local folder to a named [GitHub](https://github.com/philiprbrenan) repository using a personal access token as supplied or saved in a file.
 
-34 [writeFileFromFileFromCurrentRun](#writefilefromfilefromcurrentrun) - Write to a file in the current [GitHub](https://github.com/philiprbrenan) repository by copying a local file if we are running on [GitHub](https://github.com/philiprbrenan).
+34 [writeFileFromCurrentRun](#writefilefromcurrentrun) - Write text into a file in the current [GitHub](https://github.com/philiprbrenan) repository if we are running on [GitHub](https://github.com/philiprbrenan).
 
-35 [writeFileFromFileUsingSavedToken](#writefilefromfileusingsavedtoken) - Copy a file to [GitHub](https://github.com/philiprbrenan)  using a personal access token as supplied or saved in a file.
+35 [writeFileFromFileFromCurrentRun](#writefilefromfilefromcurrentrun) - Write to a file in the current [GitHub](https://github.com/philiprbrenan) repository by copying a local file if we are running on [GitHub](https://github.com/philiprbrenan).
 
-36 [writeFileUsingSavedToken](#writefileusingsavedtoken) - Write to a file on [GitHub](https://github.com/philiprbrenan) using a personal access token as supplied or saved in a file.
+36 [writeFileFromFileUsingSavedToken](#writefilefromfileusingsavedtoken) - Copy a file to [GitHub](https://github.com/philiprbrenan)  using a personal access token as supplied or saved in a file.
 
-37 [writeFolderUsingSavedToken](#writefolderusingsavedtoken) - Write all the files in a local folder to a target folder on a named [GitHub](https://github.com/philiprbrenan) repository using a personal access token as supplied or saved in a file.
+37 [writeFileUsingSavedToken](#writefileusingsavedtoken) - Write to a file on [GitHub](https://github.com/philiprbrenan) using a personal access token as supplied or saved in a file.
+
+38 [writeFolderUsingSavedToken](#writefolderusingsavedtoken) - Write all the files in a local folder to a target folder on a named [GitHub](https://github.com/philiprbrenan) repository using a personal access token as supplied or saved in a file.
 
 # Installation
 

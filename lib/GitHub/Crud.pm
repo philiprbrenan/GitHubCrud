@@ -50,7 +50,12 @@ sub GitHub::Crud::Response::new($$)                                             
 
   my $R = bless {command=>$request}, "GitHub::Crud::Response";                  # Construct the response
 
-  my $r = xxx $request, qr(HTTP);
+  my $r;
+  for my $i(1..10)                                                              # Request several times as lately, 2026-02-13, Github has been occasionally handing back empty responses
+   {$r = xxx $request, qr(HTTP);
+    last if $r;
+   }
+  confess "No response to request:\n$request"  if !$r;
 
   $r =~ s/\r//gs;                                                               # Internet line ends
   my ($http, @r) = split /\n/, $r;
@@ -177,6 +182,11 @@ genHash(q(GitHub::Crud::Response),                                              
   x_accepted_github_permissions           => undef,
   x_envoy_decorator_operation             => undef,
   x_envoy_upstream_service_time           => undef,
+  x_internal_experiment_version_metadata  => undef,
+  x_internal_experiment_version_metadata  => undef,
+  x_internal_experiment_version_metadata  => undef,
+  x_internal_experiment_version_metadata  => undef,
+  x_internal_experiment_version_metadata  => undef,
  );
 
 genHash(q(GitHub::Crud::Response::Data),                                        # Response from a request made to L<GitHub>.

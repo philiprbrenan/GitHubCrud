@@ -183,10 +183,6 @@ genHash(q(GitHub::Crud::Response),                                              
   x_envoy_decorator_operation             => undef,
   x_envoy_upstream_service_time           => undef,
   x_internal_experiment_version_metadata  => undef,
-  x_internal_experiment_version_metadata  => undef,
-  x_internal_experiment_version_metadata  => undef,
-  x_internal_experiment_version_metadata  => undef,
-  x_internal_experiment_version_metadata  => undef,
  );
 
 genHash(q(GitHub::Crud::Response::Data),                                        # Response from a request made to L<GitHub>.
